@@ -1,0 +1,40 @@
+#!/bin/bash
+
+echo ".....Starting....."
+
+# remove apps docker images if exists
+echo ".....Cleaning docker images....."
+
+docker-compose rm -s -f message-processing-service
+docker rmi scripts_message-processing-service
+
+docker-compose rm -s -f chat-service
+docker rmi scripts_chat-service
+
+docker-compose rm -s -f chat-management-service
+docker rmi scripts_chat-management-service
+
+# build all jars
+echo ".....Building all jars....."
+
+cd ../message-processing-service
+./gradlew clean build -x test
+
+cd -
+
+cd ../chat-service
+./gradlew clean build -x test
+
+cd -
+
+cd ../chat-management-service
+./gradlew clean build -x test
+
+cd -
+
+# run docker containers using compose
+echo ".....Running docker containers....."
+
+docker-compose up -d
+
+echo ".....Success....."

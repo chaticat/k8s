@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka
+          image: confluentinc/cp-kafka:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 9092
+            - containerPort: 29092
+          envFrom:
+            - configMapRef:
+                name: kafka-config
+          command: ["bash", "-c", "unset KAFKA_PORT; /etc/confluent/docker/run"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+spec:
+  selector:
+    app: kafka
+  ports:
+    - port: 9092
+      targetPort: 9092
+  type: ClusterIP

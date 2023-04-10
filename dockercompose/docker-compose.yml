@@ -1,0 +1,118 @@
+version: '3'
+
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres:15.2
+    environment:
+      POSTGRES_DB: "chaticat"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - C:\space\Projects\volumes:/var/lib/postgresql
+    networks:
+      - custom-network
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - '27017:27017'
+    logging:
+      options:
+        max-size: 1g
+    environment:
+      MONGO_INITDB_DATABASE: "chaticat"
+      MONGO_INITDB_ROOT_USERNAME: "mongo"
+      MONGO_INITDB_ROOT_PASSWORD: "mongo"
+    networks:
+      - custom-network
+
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - custom-network
+
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    expose:
+      - 9092
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - custom-network
+
+  message-processing-service:
+    container_name: message-processing-service
+    build:
+      context: ../message-processing-service
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+      - mongo
+    ports:
+      - 8083:8083
+    networks:
+      - custom-network
+
+  chat-service:
+    container_name: chat-service
+    build:
+      context: ../chat-service
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+      - message-processing-service
+    ports:
+      - 8082:8082
+    networks:
+      - custom-network
+
+  chat-management-service:
+    container_name: chat-management-service
+    build:
+      context: ../chat-management-service
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - chat-service
+    ports:
+      - 8080:8080
+    networks:
+      - custom-network
+
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ../auth-service
+      dockerfile: Dockerfile
+    image: auth-service:latest
+    depends_on:
+      - postgres
+    ports:
+      - 8081:8081
+    networks:
+      - custom-network
+
+networks:
+  custom-network:
+    driver: bridge
