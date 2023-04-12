@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-search-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastic-search-service
+  template:
+    metadata:
+      labels:
+        app: elastic-search-service
+    spec:
+      containers:
+        - name: app
+          image: elastic-search-service:latest
+          ports:
+            - containerPort: 8090
+          imagePullPolicy: "Never"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-search-service
+spec:
+  selector:
+    app: elastic-search-service
+  ports:
+    - port: 8090
+      targetPort: 8090
+  type: ClusterIP

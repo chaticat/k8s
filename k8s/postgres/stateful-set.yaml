@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: postgres
 spec:
@@ -22,11 +22,12 @@ spec:
                 name: postgres-config
           volumeMounts:
             - name: storage
-              mountPath: volumes\data
+              mountPath: volumes/data
+              subPath: pgdata
       volumes:
         - name: storage
           persistentVolumeClaim:
-            claimName: postgres-pv-claim
+            claimName: postgres
 ---
 apiVersion: v1
 kind: Service
