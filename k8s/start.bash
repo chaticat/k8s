@@ -5,8 +5,27 @@ echo ".....Starting....."
 echo ".....Setting up postgres....."
 kubectl apply -f postgres
 
+echo ".....Setting up mongo....."
+kubectl apply -f mongo
+
 echo ".....Setting up kafka....."
 kubectl apply -f kafka
+
+echo ".....Setting up elastic-search....."
+kubectl apply -f elastic-search
+
+echo ".....Setting up elastic-search-service....."
+
+cd ../../elastic-search-service
+./gradlew clean build -x test
+
+kubectl delete deployment elastic-search-service
+docker rmi --force elastic-search-service
+docker build -t elastic-search-service .
+
+cd -
+
+kubectl apply -f elastic-search-service
 
 echo ".....Setting up auth-service....."
 
@@ -59,21 +78,5 @@ docker build -t chat-management-service .
 cd -
 
 kubectl apply -f chat-management-service
-
-echo ".....Setting up elastic-search....."
-kubectl apply -f elastic-search
-
-echo ".....Setting up elastic-search-service....."
-
-cd ../../elastic-search-service
-./gradlew clean build -x test
-
-kubectl delete deployment elastic-search-service
-docker rmi --force elastic-search-service
-docker build -t elastic-search-service .
-
-cd -
-
-kubectl apply -f elastic-search-service
 
 echo ".....Finished....."

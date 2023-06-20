@@ -3,7 +3,7 @@
 echo ".....Stopping all pods....."
 
 kubectl delete statefulset elastic-search
-kubectl delete deployemnt elastic-search-service
+kubectl delete deployment elastic-search-service
 kubectl delete deployment zookeeper
 kubectl delete deployment kafka
 kubectl delete deployment auth-service

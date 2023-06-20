@@ -18,6 +18,12 @@ spec:
           ports:
             - containerPort: 8083
           imagePullPolicy: "Never"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+          envFrom:
+            - configMapRef:
+                name: message-processing-service-config
 ---
 apiVersion: v1
 kind: Service

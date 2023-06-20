@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chat-management-service-config
+  labels:
+    app: chat-management-service
+data:
+  spring.datasource.url: jdbc:postgresql://postgres:5432/chaticat
+  spring.datasource.username: postgres
+  spring.datasource.password: postgres
+  jwt.expirationAccessToken: '56000000'
+  jwt.expirationRefreshToken: '2592000000'
+  jwt.secretKey: SeCreTKey
+  elastic.search.service.url: http://elastic-search-service:8090
+  api.host.client: http://localhost:4200

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chat-service-config
+  labels:
+    app: chat-service
+data:
+  jwt.expirationAccessToken: '56000000'
+  jwt.expirationRefreshToken: '2592000000'
+  jwt.secretKey: SeCreTKey
+  kafka.address: http://kafka:9092

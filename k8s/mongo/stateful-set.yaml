@@ -1,46 +1,46 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres
+  name: mongo
   labels:
-    app: postgres
+    app: mongo
 spec:
-  serviceName: postgres
+  serviceName: mongo
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: mongo
   template:
     metadata:
       labels:
-        app: postgres
+        app: mongo
     spec:
       containers:
-        - name: postgres
-          image: postgres:15.2
+        - name: mongo
+          image: mongo:latest
           imagePullPolicy: "IfNotPresent"
           envFrom:
             - configMapRef:
-                name: postgres-config
+                name: mongo-config
           ports:
-            - containerPort: 5432
-              name: postgres
+            - containerPort: 27017
+              name: mongo
           volumeMounts:
-            - name: pv-data
+            - name: mongo
               mountPath: /data/db
       volumes:
-        - name: pv-data
+        - name: mongo
           persistentVolumeClaim:
-            claimName: postgres
+            claimName: mongo
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: mongo
 spec:
   selector:
-    app: postgres
+    app: mongo
   ports:
-    - port: 5432
-      targetPort: 5432
+    - port: 27017
+      targetPort: 27017
   type: LoadBalancer

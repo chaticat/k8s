@@ -95,7 +95,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: eks-srv
+  name: elasticsearch
 spec:
   selector:
     app: elasticsearch

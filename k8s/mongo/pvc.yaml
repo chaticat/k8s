@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres
+  name: mongo
 spec:
   storageClassName: manual
   accessModes:
